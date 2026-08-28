@@ -1826,6 +1826,7 @@ let realtimeStarted=false;
 let liveAccessChannel=null;
 let liveBanPollTimer=null;
 let liveForcedBanIp=null;
+let liveProfileWasBlocked=false;
 let liveAnnouncementPollTimer=null;
 let liveAnnouncementIds=new Set();
 let liveAnnouncementInitialized=false;
@@ -1875,15 +1876,23 @@ async function checkLiveProfileBan(){
     }
 
     if(data?.status==='blocked'){
+      liveProfileWasBlocked=true;
       liveForcedBanIp=currentRequestIp||'PROFILE_BANNED';
       showBlocked(data.blocked_reason||'Akun kamu dibanned oleh admin. Akses website diblokir sampai admin melakukan Unban.');
       return false;
     }
 
-    // Hanya status ACTIVE dari database yang boleh membersihkan layar banned.
     if(data?.status==='active'){
+      const wasBlocked=liveProfileWasBlocked || !!liveForcedBanIp;
+      liveProfileWasBlocked=false;
       liveForcedBanIp=null;
       hideBlocked();
+
+      // Jika sebelumnya diblokir dan sekarang sudah Unban, pulihkan Dashboard
+      // memakai session yang sama. Tidak ada sign-out dan tidak perlu Sign In.
+      if(wasBlocked){
+        await loadProfile(user);
+      }
     }
     return true;
   }catch(e){
@@ -2455,6 +2464,7 @@ function startLiveUpdates(){
 
         if(target && myIp && target===myIp){
           liveForcedBanIp=null;
+          liveProfileWasBlocked=true;
           await checkLiveProfileBan();
           await checkIpAccess();
           return;
