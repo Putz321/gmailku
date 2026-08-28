@@ -707,7 +707,7 @@ body.dashboard-open{overflow:hidden;height:100dvh;position:fixed;width:100%;top:
 #modalRoot.notification-fullscreen .modal-actions .btn-modal{flex:0 0 auto!important;width:auto!important;min-width:76px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;border-radius:12px!important;font-size:11px!important}
 #modalRoot.notification-fullscreen .modal-actions .btn-modal:first-child{min-width:62px!important}
 #modalRoot.notification-fullscreen .modal-actions .btn-modal:last-child{min-width:62px!important}
-.admin-announcement-card{margin-top:12px}.admin-announcement-textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.09);background:#090c11;color:#fff;font:inherit;font-size:12px;line-height:1.55;outline:none}.admin-announcement-textarea:focus{border-color:rgba(74,140,255,.65);box-shadow:0 0 0 3px rgba(74,140,255,.08)}.admin-announcement-actions{display:flex;justify-content:flex-end;margin-top:10px}.admin-announcement-note{margin-top:8px;color:#737e90;font-size:9px;line-height:1.5}
+.admin-announcement-card{margin-top:12px}.admin-announcement-textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.09);background:#090c11;color:#fff;font:inherit;font-size:12px;line-height:1.55;outline:none}.admin-announcement-textarea:focus{border-color:rgba(74,140,255,.65);box-shadow:0 0 0 3px rgba(74,140,255,.08)}.admin-announcement-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px}.admin-announcement-note{margin-top:8px;color:#737e90;font-size:9px;line-height:1.5}
 .dash-brand{display:flex;align-items:center;gap:10px;min-width:0}.dash-brand img{width:42px;height:42px;border-radius:13px;object-fit:cover;border:1px solid rgba(255,255,255,.09);flex:0 0 42px}.dash-brand h2{margin:0;font-size:17px;line-height:1.1;font-weight:800;color:#fff}.dash-brand small{display:block;margin-top:3px;color:#8d96a8;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
 .dash-btn{width:auto!important;border:0;border-radius:12px;padding:11px 13px;min-height:42px;font-weight:750;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:12px;line-height:1;transition:transform .18s,opacity .18s,background .18s}.dash-btn:active{transform:scale(.97)}.dash-btn.primary{background:#4a8cff;color:#fff;box-shadow:0 8px 20px rgba(74,140,255,.18)}.dash-btn.danger{background:rgba(255,69,58,.10);color:#ff8178;border:1px solid rgba(255,69,58,.15)}.dash-btn.ghost{background:rgba(255,255,255,.055);color:#e8ecf3;border:1px solid rgba(255,255,255,.075)}
 .dash-page{display:none!important;visibility:hidden}.dash-page.active{display:block!important;visibility:visible;animation:dashIn .24s ease}
@@ -1518,7 +1518,7 @@ body.dashboard-open{overflow:hidden;height:100dvh;position:fixed;width:100%;top:
 
     <!-- ADMIN -->
     <div id="dashAdmin" class="dash-page">
-      <div class="dash-card admin-page-card"><div class="admin-page-head"><div><div class="mini-title"><span data-svg="settings"></span> Administrator</div><h3>Panel Admin</h3><p class="admin-subtitle">Kelola akses berdasarkan IP perangkat. Gmail tetap ditampilkan untuk memudahkan pencarian dan identifikasi.</p></div><button class="dash-btn ghost" id="btnAdminBack"><span data-svg="arrow-left"></span>Kembali</button></div><div class="admin-admin-highlight"><div class="admin-admin-icon"><span data-svg="shield"></span></div><div><small>GMAIL ADMIN</small><strong>uhn8236@gmail.com</strong><span>Admin utama • Tidak dapat dibanned</span></div></div><div class="dash-card admin-announcement-card"><div class="mini-title"><span data-svg="bell"></span> Pengumuman</div><h3><span data-svg="info"></span> Broadcast Informasi</h3><textarea id="adminAnnouncementText" class="admin-announcement-textarea" placeholder="Ketik pengumuman atau informasi untuk user aktif..."></textarea><div class="admin-announcement-actions"><button class="dash-btn primary" id="btnBroadcastAnnouncement" type="button"><span data-svg="bell"></span> Broadcast</button></div><div class="admin-announcement-note">Informasi akan tersedia untuk user yang aktif melalui icon notifikasi.</div></div><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="active"><span data-svg="check"></span> Gmail Active <b id="adminActiveCount">0</b></button><button class="admin-tab" data-admin-tab="banned"><span data-svg="warning"></span> IP Banned <b id="adminBannedCount">0</b></button><button class="admin-tab" data-admin-tab="bulk-ban"><span data-svg="ban"></span> Banned Masal IP</button><button class="admin-tab" data-admin-tab="bulk-unban"><span data-svg="unlock"></span> Unbanned Masal IP</button></div><div class="admin-search-wrap" id="adminSearchWrap"><span data-svg="search"></span><input id="adminSearchInput" class="admin-search" type="search" placeholder="Cari Gmail untuk menemukan IP..."><button id="btnDownloadBannedGmails" class="admin-download-btn" type="button" title="Download daftar IP Banned" aria-label="Download daftar IP Banned" style="display:none"><span data-svg="download"></span></button></div><div id="adminUserList" class="admin-user-list"><div class="notice">Memuat data user...</div></div></div>
+      <div class="dash-card admin-page-card"><div class="admin-page-head"><div><div class="mini-title"><span data-svg="settings"></span> Administrator</div><h3>Panel Admin</h3><p class="admin-subtitle">Kelola akses berdasarkan IP perangkat. Gmail tetap ditampilkan untuk memudahkan pencarian dan identifikasi.</p></div><button class="dash-btn ghost" id="btnAdminBack"><span data-svg="arrow-left"></span>Kembali</button></div><div class="admin-admin-highlight"><div class="admin-admin-icon"><span data-svg="shield"></span></div><div><small>GMAIL ADMIN</small><strong>uhn8236@gmail.com</strong><span>Admin utama • Tidak dapat dibanned</span></div></div><div class="dash-card admin-announcement-card"><div class="mini-title"><span data-svg="bell"></span> Pengumuman</div><h3><span data-svg="info"></span> Broadcast Informasi</h3><textarea id="adminAnnouncementText" class="admin-announcement-textarea" placeholder="Ketik pengumuman atau informasi untuk user aktif..."></textarea><div class="admin-announcement-actions"><button class="dash-btn primary" id="btnBroadcastAnnouncement" type="button"><span data-svg="bell"></span> Broadcast</button><button class="dash-btn danger" id="btnDeleteAllAnnouncements" type="button"><span data-svg="trash"></span> Hapus Semua Broadcast</button></div><div class="admin-announcement-note">Informasi akan tersedia untuk user yang aktif melalui icon notifikasi. Hapus Semua Broadcast akan menghapus seluruh riwayat broadcast dari database.</div></div><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="active"><span data-svg="check"></span> Gmail Active <b id="adminActiveCount">0</b></button><button class="admin-tab" data-admin-tab="banned"><span data-svg="warning"></span> IP Banned <b id="adminBannedCount">0</b></button><button class="admin-tab" data-admin-tab="bulk-ban"><span data-svg="ban"></span> Banned Masal IP</button><button class="admin-tab" data-admin-tab="bulk-unban"><span data-svg="unlock"></span> Unbanned Masal IP</button></div><div class="admin-search-wrap" id="adminSearchWrap"><span data-svg="search"></span><input id="adminSearchInput" class="admin-search" type="search" placeholder="Cari Gmail untuk menemukan IP..."><button id="btnDownloadBannedGmails" class="admin-download-btn" type="button" title="Download daftar IP Banned" aria-label="Download daftar IP Banned" style="display:none"><span data-svg="download"></span></button></div><div id="adminUserList" class="admin-user-list"><div class="notice">Memuat data user...</div></div></div>
     </div>
   </div>
   <nav class="bottom-nav"><button class="nav-btn" data-dash="history"><span data-svg="clock"></span><span class="nav-label">Riwayat</span></button><button class="nav-btn active" data-dash="home"><span data-svg="home"></span><span class="nav-label">Home</span></button><button class="nav-btn" data-dash="profile"><span data-svg="user-circle"></span><span class="nav-label">Profil</span></button></nav>
@@ -1845,9 +1845,37 @@ async function checkIpAccess(){
   }
 }
 
+async function getPublicIp(){
+  const endpoints=['https://api64.ipify.org?format=json','https://api.ipify.org?format=json'];
+  for(const endpoint of endpoints){
+    try{
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),5000);
+      const res=await fetch(endpoint,{cache:'no-store',signal:controller.signal});
+      clearTimeout(timer);
+      if(!res.ok) continue;
+      const json=await res.json();
+      const ip=String(json?.ip||'').trim();
+      if(/^((25[0-5]|2[0-4]\d|1?\d?\d)(\.|$)){4}$/.test(ip)) return ip;
+    }catch(e){ console.warn('Gagal mendeteksi IP:',e); }
+  }
+  return null;
+}
+
 async function syncAccountIp(user){
   if(!supabaseClient||!user||isAdminUser(user)) return {allowed:true};
   try{
+    // Simpan IP publik user ke profiles agar Panel Admin selalu memiliki IP target.
+    const publicIp=await getPublicIp();
+    if(publicIp){
+      currentRequestIp=publicIp;
+      const {error:updateError}=await supabaseClient.from('profiles')
+        .update({ip_address:publicIp,updated_at:new Date().toISOString()})
+        .eq('id',user.id);
+      if(updateError) console.warn('Gagal menyimpan IP user:',updateError.message);
+    }
+
+    // Tetap jalankan RPC lama untuk kompatibilitas dengan sistem keamanan Supabase.
     const {data,error}=await supabaseClient.rpc('claim_account_ip',{p_user_id:user.id});
     if(error){
       console.warn('IP account binding:',error.message);
@@ -1855,7 +1883,7 @@ async function syncAccountIp(user){
     }
     currentRequestIp=data?.ip||currentRequestIp;
     if(data?.allowed===false){
-      showBlocked(data?.reason||'Perangkat/IP ini sudah terhubung ke akun lain atau telah dibanned. Satu perangkat hanya dapat menggunakan satu akun. Silakan hubungi admin untuk unbanned.');
+      showBlocked(data?.reason||'Perangkat/IP ini sudah terhubung ke akun lain atau telah dibanned. Silakan hubungi admin untuk unbanned.');
       try{await supabaseClient.auth.signOut();}catch(e){}
       return {allowed:false};
     }
@@ -1888,6 +1916,8 @@ async function loadProfile(user){
   if(data?.status==='blocked'){showBlocked(data.blocked_reason);try{await supabaseClient.auth.signOut();}catch(e){}return data;}
   // Jangan memakai claim_account_ip saat login. RPC tersebut dapat menolak akun
   // hanya karena IP sedang terikat ke akun lain, padahal IP tersebut belum dibanned.
+  // Simpan IP publik user ke profil agar Panel Admin dapat menemukan target banned.
+  await syncAccountIp(user);
   // Banned harus ditentukan hanya oleh check_ip_access / tabel banned_ips.
   const ipOk=await checkIpAccess();
   if(!ipOk)return {...data,status:'blocked',blocked_reason:'IP perangkat ini sedang dibanned.'};
@@ -2202,6 +2232,67 @@ async function broadcastAnnouncement(){
   await loadAnnouncements();
   showToast('success','Broadcast Berhasil','Informasi sudah dikirim untuk user aktif.');
 }
+
+async function deleteAllAdminAnnouncements(){
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  if(!isAdminUser(user)){
+    showToast('error','Akses ditolak','Hanya admin yang dapat menghapus broadcast.');
+    return;
+  }
+
+  const btn=document.getElementById('btnDeleteAllAnnouncements');
+  if(btn && btn.dataset.busy==='1') return;
+
+  const count=announcementsCache.length;
+  if(!count){
+    showToast('info','Tidak Ada Broadcast','Belum ada broadcast yang tersimpan.');
+    return;
+  }
+
+  showModal({
+    type:'warning',
+    title:'Hapus Semua Broadcast?',
+    desc:`Semua ${count} broadcast yang tersimpan akan dihapus permanen dari database dan tidak dapat dikembalikan.`,
+    actions:[
+      {label:'Batal',onClick:closeModal},
+      {label:'Hapus Semua',danger:true,onClick:async()=>{
+        if(btn){
+          btn.dataset.busy='1';
+          btn.disabled=true;
+          btn.dataset.originalText=btn.innerHTML;
+          btn.innerHTML='<span data-svg="loader"></span> Menghapus...';
+          injectIcons();
+        }
+
+        const {error}=await supabaseClient
+          .from('announcements')
+          .delete()
+          .not('id','is',null);
+
+        if(btn){
+          btn.dataset.busy='0';
+          btn.disabled=false;
+          btn.innerHTML=btn.dataset.originalText||'<span data-svg="trash"></span> Hapus Semua Broadcast';
+          injectIcons();
+        }
+
+        if(error){
+          showToast('error','Gagal Menghapus Broadcast',error.message);
+          return;
+        }
+
+        announcementsCache=[];
+        announcementsLoaded=true;
+        localStorage.removeItem('sg_seen_announcement_ts');
+        setHiddenAnnouncementIds([]);
+        updateNotificationBadge();
+        closeModal();
+        showToast('success','Broadcast Dihapus',`Semua ${count} broadcast berhasil dihapus.`);
+      }}
+    ]
+  });
+  injectIcons();
+}
 function switchDash(page){const target=document.getElementById('dash'+page.charAt(0).toUpperCase()+page.slice(1));if(!target)return;document.querySelectorAll('.dash-page').forEach(x=>x.classList.remove('active'));target.classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.dash===page));if(page==='history'&&supabaseClient)supabaseClient.auth.getUser().then(({data})=>loadHistory(data.user));if(page==='home'){document.getElementById('dashboardScreen').scrollTop=0;}else{document.getElementById('dashboardScreen').scrollTop=0;}}
 
 // Mencatat aksi melalui RPC Supabase. Server yang menentukan apakah aktivitas sudah terlalu cepat.
@@ -2471,6 +2562,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('btnNotifications')?.addEventListener('click',openNotifications);
   loadAnnouncements();
   document.getElementById('btnBroadcastAnnouncement')?.addEventListener('click',broadcastAnnouncement);
+  document.getElementById('btnDeleteAllAnnouncements')?.addEventListener('click',deleteAllAdminAnnouncements);
   document.getElementById('btnRules').addEventListener('click',()=>{const c=document.getElementById('rulesContent'); const open=c.style.display==='none'; c.style.display=open?'block':'none'; document.getElementById('btnRules').innerHTML=(open?'<span data-svg="close"></span><span>Tutup Rules</span>':'<span data-svg="info"></span><span>Lihat Rules</span>'); injectIcons();});
   document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchDash(b.dataset.dash)));
   document.getElementById('storeCount').addEventListener('input',updateStoreTotal);
