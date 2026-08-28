@@ -1821,10 +1821,18 @@ function showDashboard(profile,user){
 function hideDashboard(){document.body.classList.remove('dashboard-open');window.scrollTo({top:0,left:0,behavior:'auto'}); document.documentElement.scrollTop=0; document.body.scrollTop=0; document.getElementById('dashboardScreen').scrollTop=0; document.getElementById('dashboardScreen').style.display='none';document.getElementById('screen-welcome').style.display='';document.getElementById('userPanel').classList.remove('active');}
 let currentRequestIp=null;
 let ipAccessChecked=false;
+let realtimeStarted=false;
+let liveBanPollTimer=null;
+let liveAnnouncementPollTimer=null;
+let liveAnnouncementIds=new Set();
+let liveAnnouncementInitialized=false;
+let liveBanHandling=false;
 
 async function checkIpAccess(){
   if(!supabaseClient) return true;
+  if(liveBanHandling)return true;
   try{
+    liveBanHandling=true;
     const {data,error}=await supabaseClient.rpc('check_ip_access');
     if(error){
       console.warn('IP access check:',error.message);
@@ -1844,6 +1852,8 @@ async function checkIpAccess(){
   }catch(err){
     console.warn('IP access check failed:',err);
     return true;
+  }finally{
+    liveBanHandling=false;
   }
 }
 
@@ -2160,7 +2170,7 @@ function updateStoreTotal(){const n=Math.max(0,parseInt(document.getElementById(
 // ========================= ANNOUNCEMENTS =========================
 let announcementsCache=[];
 let announcementsLoaded=false;
-async function loadAnnouncements(){
+async function loadAnnouncements(options={}){
   if(!supabaseClient)return;
   const {data:{user}}=await supabaseClient.auth.getUser();
   // User yang baru mendaftar belum boleh melihat broadcast.
@@ -2175,10 +2185,26 @@ async function loadAnnouncements(){
     console.warn('Announcements:',error.message);
     return;
   }
-  announcementsCache=data||[];
+  const incoming=(data||[]);
+  const previousIds=new Set(announcementsCache.map(x=>String(x.id)));
+  announcementsCache=incoming;
   announcementsLoaded=true;
   updateNotificationBadge();
+
+  // Saat realtime/poll menemukan broadcast baru, tampilkan langsung tanpa refresh.
+  if(options.live && liveAnnouncementInitialized && !isAdminUser(user)){
+    const fresh=incoming.filter(x=>!liveAnnouncementIds.has(String(x.id)));
+    fresh.forEach(x=>liveAnnouncementIds.add(String(x.id)));
+    if(fresh.length){
+      const latest=fresh.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+      showModal({type:'info',title:'Broadcast Informasi',desc:'Informasi baru dari admin.',body:`<div class="announcement-item"><strong>Admin</strong><div class="announcement-message">${escapeHtml(latest.message)}</div><small>${escapeHtml(formatAnnouncementDate(latest.created_at))}</small></div>`,actions:[{label:'Lihat Semua',primary:true,onClick:openNotifications}]});
+    }
+  }else{
+    incoming.forEach(x=>liveAnnouncementIds.add(String(x.id)));
+  }
+  liveAnnouncementInitialized=true;
 }
+
 function getHiddenAnnouncementIds(){
   try{return JSON.parse(localStorage.getItem('sg_deleted_announcement_ids')||'[]');}catch{return [];}
 }
@@ -2299,6 +2325,42 @@ async function deleteAllAdminAnnouncements(){
   });
   injectIcons();
 }
+function startLiveUpdates(){
+  if(!supabaseClient || realtimeStarted)return;
+  realtimeStarted=true;
+
+  // Realtime utama: perubahan status/IP dan broadcast diproses tanpa refresh.
+  try{
+    supabaseClient.channel('storgmail-live-access')
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},()=>{
+        checkIpAccess();
+      })
+      .subscribe();
+
+    supabaseClient.channel('storgmail-live-announcements')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'announcements'},()=>{
+        loadAnnouncements({live:true});
+      })
+      .subscribe();
+  }catch(e){ console.warn('Realtime setup:',e); }
+
+  // Fallback polling memastikan tetap responsif walaupun Realtime publication
+  // belum diaktifkan pada tabel Supabase. Tidak perlu refresh halaman.
+  liveBanPollTimer=setInterval(async()=>{
+    if(document.hidden || liveBanHandling)return;
+    const {data:{user}}=await supabaseClient.auth.getUser();
+    if(user) await checkIpAccess();
+  },2500);
+
+  liveAnnouncementPollTimer=setInterval(async()=>{
+    if(document.hidden)return;
+    const {data:{user}}=await supabaseClient.auth.getUser();
+    if(user && localStorage.getItem('sg_ever_logged_in_'+user.id)==='1'){
+      await loadAnnouncements({live:true});
+    }
+  },2500);
+}
+
 function switchDash(page){const target=document.getElementById('dash'+page.charAt(0).toUpperCase()+page.slice(1));if(!target)return;document.querySelectorAll('.dash-page').forEach(x=>x.classList.remove('active'));target.classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.dash===page));if(page==='history'&&supabaseClient)supabaseClient.auth.getUser().then(({data})=>loadHistory(data.user));if(page==='home'){document.getElementById('dashboardScreen').scrollTop=0;}else{document.getElementById('dashboardScreen').scrollTop=0;}}
 
 // Mencatat aksi melalui RPC Supabase. Server yang menentukan apakah aktivitas sudah terlalu cepat.
@@ -2566,7 +2628,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('pageshow',()=>{checkIpAccess();});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkIpAccess();});
   document.getElementById('btnNotifications')?.addEventListener('click',openNotifications);
-  loadAnnouncements();
+  loadAnnouncements().then(()=>startLiveUpdates());
   document.getElementById('btnBroadcastAnnouncement')?.addEventListener('click',broadcastAnnouncement);
   document.getElementById('btnDeleteAllAnnouncements')?.addEventListener('click',deleteAllAdminAnnouncements);
   document.getElementById('btnRules').addEventListener('click',()=>{const c=document.getElementById('rulesContent'); const open=c.style.display==='none'; c.style.display=open?'block':'none'; document.getElementById('btnRules').innerHTML=(open?'<span data-svg="close"></span><span>Tutup Rules</span>':'<span data-svg="info"></span><span>Lihat Rules</span>'); injectIcons();});
