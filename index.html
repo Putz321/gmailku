@@ -1825,17 +1825,16 @@ let ipAccessChecked=false;
 let realtimeStarted=false;
 let liveAccessChannel=null;
 let liveBanPollTimer=null;
+let liveForcedBanIp=null;
 let liveAnnouncementPollTimer=null;
 let liveAnnouncementIds=new Set();
 let liveAnnouncementInitialized=false;
 let liveBanHandling=false;
 let liveBanCheckPromise=null;
 
-async function sendLiveAccessSignal(eventName){
+async function sendLiveAccessSignal(eventName,targetIp=null){
   try{
     if(!supabaseClient)return;
-    // Gunakan channel yang sama dengan listener user. Membuat channel baru
-    // setiap kali mengirim dapat membuat event terlewat sebelum subscribe.
     if(!liveAccessChannel){
       liveAccessChannel=supabaseClient.channel('storgmail-live-access-signal');
       liveAccessChannel.subscribe();
@@ -1853,7 +1852,7 @@ async function sendLiveAccessSignal(eventName){
     await liveAccessChannel.send({
       type:'broadcast',
       event:eventName,
-      payload:{ts:Date.now()}
+      payload:{ts:Date.now(),target_ip:targetIp?String(targetIp).trim():null}
     });
   }catch(e){ console.warn('Live access signal:',e); }
 }
@@ -1880,7 +1879,14 @@ async function checkIpAccess(){
         return false;
       }
 
-      // Jika sudah aktif/unban, bersihkan overlay banned sepenuhnya.
+      // Jika admin sudah mengirim sinyal banned untuk IP ini, jangan biarkan
+      // polling yang terlambat menutup overlay. Overlay hanya dibersihkan
+      // setelah menerima sinyal Unban untuk IP yang sama.
+      if(liveForcedBanIp && currentRequestIp && String(liveForcedBanIp)===String(currentRequestIp)){
+        showBlocked('Akun kamu dibanned oleh admin. Akses website diblokir sampai IP kamu di-unban.');
+        return false;
+      }
+
       hideBlocked();
       return true;
     }catch(err){
@@ -2387,13 +2393,33 @@ function startLiveUpdates(){
   try{
     liveAccessChannel=supabaseClient.channel('storgmail-live-access-signal');
     liveAccessChannel
-      .on('broadcast',{event:'user_banned'},()=>{
-        checkIpAccess();
-        setTimeout(()=>checkIpAccess(),150);
+      .on('broadcast',{event:'user_banned'},async({payload})=>{
+        const target=String(payload?.target_ip||'').trim();
+        let myIp=String(currentRequestIp||'').trim();
+        if(!myIp) myIp=String(await getPublicIp()||'').trim();
+
+        // Only the browser whose public IP was banned shows the blocked screen.
+        if(target && myIp && target===myIp){
+          liveForcedBanIp=target;
+          showBlocked('Akun kamu dibanned oleh admin. Akses website diblokir sampai IP kamu di-unban.');
+          return;
+        }
+
+        // Keep the normal server-side check for compatibility.
+        await checkIpAccess();
       })
-      .on('broadcast',{event:'user_unbanned'},()=>{
-        checkIpAccess();
-        setTimeout(()=>checkIpAccess(),150);
+      .on('broadcast',{event:'user_unbanned'},async({payload})=>{
+        const target=String(payload?.target_ip||'').trim();
+        let myIp=String(currentRequestIp||'').trim();
+        if(!myIp) myIp=String(await getPublicIp()||'').trim();
+
+        if(target && myIp && target===myIp){
+          liveForcedBanIp=null;
+          hideBlocked();
+          await checkIpAccess();
+          return;
+        }
+        await checkIpAccess();
       })
       .subscribe();
 
@@ -2605,12 +2631,12 @@ async function executeBulkAdminAction(isBan){
     const {error}=await supabaseClient.rpc(rpc,args);
     if(error){failed.push(`${item.ip}: ${error.message}`);continue;}
     success++;
+    await sendLiveAccessSignal(isBan?'user_banned':'user_unbanned',user.ip_address);
     adminUsersCache=adminUsersCache.map(x=>x.id===user.id
       ? (isBan?{...x,status:'blocked',blocked_reason:'Banned Masal IP oleh Admin'}:{...x,status:'active',blocked_reason:null})
       : x);
   }
   if(button){button.disabled=false;button.innerHTML=button.dataset.originalText||'';injectIcons();}
-  if(success) await sendLiveAccessSignal(isBan?'user_banned':'user_unbanned');
   const action=isBan?'Banned':'Unbanned';
   const details=[
     `${success} IP berhasil ${action}.`,
@@ -2633,11 +2659,11 @@ async function executeBulkAdminAction(isBan){
 function openBanConfirm(user){
   if(isAdminUser(user)){showToast('info','Akun Admin','Akun admin tidak dapat dibanned.');return;}
   const body=`<div class="modal-form"><div class="admin-confirm-user"><span data-svg="mail"></span><div><b>${escapeHtml(user.email||'-')}</b><small>${escapeHtml(userDisplayName(user))}</small></div></div><label>Alasan Banned</label><textarea id="adminBanReason" class="modal-input" style="height:100px;padding:12px;resize:none" placeholder="Contoh: Spam / melanggar rules...">Spam</textarea></div>`;
-  showModal({type:'warning',title:'Banned IP?',desc:`IP ${user.ip_address||'-'} milik user ini akan dibanned. Gmail tetap ditampilkan sebagai identitas user.`,body,actions:[{label:'Batal',onClick:closeModal},{label:'Banned Sekarang',danger:true,onClick:async()=>{const reason=(document.getElementById('adminBanReason')?.value||'').trim();if(!reason)return showToast('warning','Alasan wajib','Masukkan alasan banned.');const {error}=await supabaseClient.rpc('admin_ban_user_with_ip_v2',{target_id:user.id,reason});if(error){showToast('error','Gagal Banned',error.message);return;}await sendLiveAccessSignal('user_banned');adminUsersCache=adminUsersCache.map(x=>x.id===user.id?{...x,status:'blocked',blocked_reason:reason}:x);closeModal();adminTab='banned';document.querySelectorAll('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));renderAdminUsers(document.getElementById('adminSearchInput')?.value||'');showModal({type:'success',title:'IP Berhasil Banned',desc:'IP user sudah dibanned. Gmail tetap tersimpan sebagai identitas user.',actions:[{label:'Oke',primary:true,onClick:closeModal}]});}}]});
+  showModal({type:'warning',title:'Banned IP?',desc:`IP ${user.ip_address||'-'} milik user ini akan dibanned. Gmail tetap ditampilkan sebagai identitas user.`,body,actions:[{label:'Batal',onClick:closeModal},{label:'Banned Sekarang',danger:true,onClick:async()=>{const reason=(document.getElementById('adminBanReason')?.value||'').trim();if(!reason)return showToast('warning','Alasan wajib','Masukkan alasan banned.');const {error}=await supabaseClient.rpc('admin_ban_user_with_ip_v2',{target_id:user.id,reason});if(error){showToast('error','Gagal Banned',error.message);return;}await sendLiveAccessSignal('user_banned',user.ip_address);adminUsersCache=adminUsersCache.map(x=>x.id===user.id?{...x,status:'blocked',blocked_reason:reason}:x);closeModal();adminTab='banned';document.querySelectorAll('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));renderAdminUsers(document.getElementById('adminSearchInput')?.value||'');showModal({type:'success',title:'IP Berhasil Banned',desc:'IP user sudah dibanned. Gmail tetap tersimpan sebagai identitas user.',actions:[{label:'Oke',primary:true,onClick:closeModal}]});}}]});
   injectIcons();
 }
 function openUnbanConfirm(user){
-  showModal({type:'info',title:'Unban IP?',desc:`Buka blokir IP ${user.ip_address||'-'} milik ${user.email||'-'}?` ,body:`<div class="admin-confirm-user"><span data-svg="unlock"></span><div><b>${escapeHtml(user.email||'-')}</b><small>Alasan sebelumnya: ${escapeHtml(user.blocked_reason||'Tidak ada')}</small></div></div>`,actions:[{label:'Batal',onClick:closeModal},{label:'Unban Sekarang',primary:true,onClick:async()=>{const {error}=await supabaseClient.rpc('admin_unban_user_with_ip_v2',{target_id:user.id});if(error){showToast('error','Gagal Unban',error.message);return;}await sendLiveAccessSignal('user_unbanned');adminUsersCache=adminUsersCache.map(x=>x.id===user.id?{...x,status:'active',blocked_reason:null}:x);closeModal();adminTab='active';document.querySelectorAll('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));renderAdminUsers(document.getElementById('adminSearchInput')?.value||'');showModal({type:'success',title:'IP Berhasil Di-Unban',desc:'IP user sudah dibuka kembali dan akses website dapat digunakan.',actions:[{label:'Oke',primary:true,onClick:closeModal}]});}}]});
+  showModal({type:'info',title:'Unban IP?',desc:`Buka blokir IP ${user.ip_address||'-'} milik ${user.email||'-'}?` ,body:`<div class="admin-confirm-user"><span data-svg="unlock"></span><div><b>${escapeHtml(user.email||'-')}</b><small>Alasan sebelumnya: ${escapeHtml(user.blocked_reason||'Tidak ada')}</small></div></div>`,actions:[{label:'Batal',onClick:closeModal},{label:'Unban Sekarang',primary:true,onClick:async()=>{const {error}=await supabaseClient.rpc('admin_unban_user_with_ip_v2',{target_id:user.id});if(error){showToast('error','Gagal Unban',error.message);return;}await sendLiveAccessSignal('user_unbanned',user.ip_address);adminUsersCache=adminUsersCache.map(x=>x.id===user.id?{...x,status:'active',blocked_reason:null}:x);closeModal();adminTab='active';document.querySelectorAll('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));renderAdminUsers(document.getElementById('adminSearchInput')?.value||'');showModal({type:'success',title:'IP Berhasil Di-Unban',desc:'IP user sudah dibuka kembali dan akses website dapat digunakan.',actions:[{label:'Oke',primary:true,onClick:closeModal}]});}}]});
   injectIcons();
 }
 function downloadBannedGmails(){
