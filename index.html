@@ -1090,7 +1090,7 @@ body.dashboard-open{overflow:hidden;height:100dvh;position:fixed;width:100%;top:
       <div class="dash-card"><div class="mini-title"><span data-svg="upload"></span> Pengajuan</div><h3><span data-svg="mail"></span> Form Storan</h3>
         <div class="field"><label for="storeCount"><span data-svg="hash"></span> Jumlah Gmail</label><input id="storeCount" type="number" min="1" inputmode="numeric" placeholder="Masukan jumlah Gmail"></div>
         <div class="field"><label for="storeEmails"><span data-svg="mail"></span> Alamat Gmail</label><textarea id="storeEmails" rows="5" placeholder="Masukan Gmail, satu per baris. Minimal 1"></textarea></div>
-        <div class="field"><label for="storeConfirm"><span data-svg="check"></span> Konfirmasi</label><input id="storeConfirm" type="text" placeholder="Ketik: sgsg1122"></div>
+        <div class="field"><label for="storeConfirm"><span data-svg="check"></span> Konfirmasi</label><input id="storeConfirm" type="text" placeholder="WAJIB: sgsg1122"></div>
         <div class="price-box"><div class="price-row"><span><span data-svg="tag"></span> Harga / Gmail</span><b>Rp3.000</b></div><div class="price-row"><span><span data-svg="list"></span> Total Gmail</span><b id="storeTotalQty">0</b></div><div class="price-row"><span><span data-svg="wallet"></span> Total Harga</span><b id="storeTotalPrice">Rp0</b></div><div class="price-row"><span><span data-svg="trending-up"></span> Perkiraan jika full acc</span><b id="storeEstimate">Rp0</b></div></div>
         <div class="price-box payment-box"><div class="payment-title"><span data-svg="credit-card"></span> Data Payment</div><div class="payment-row"><span><span data-svg="phone"></span> Nomor Dana</span><strong id="dashDanaNumber">-</strong></div><div class="payment-row"><span><span data-svg="user"></span> Nama Dana</span><strong id="dashDanaName">-</strong></div></div>
         <button class="dash-btn primary" id="btnSubmitStore" style="width:100%"><span data-svg="bag"></span> Jual Sekarang</button>
@@ -1294,10 +1294,6 @@ function getDeviceId() {
 }
 
 // ================================================================
-// TELEGRAM API (V1 ONLY - Visitor Notification)
-// ================================================================
-let hasNotifiedVisit = false;
-
 async function tgSendMessage(token, chatId, message){
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
   try{
@@ -1744,19 +1740,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   
   const deviceId = getDeviceId();
   console.log('Device ID:', deviceId);
-  
-  // Notify Telegram about visitor (only once per session)
-  if (!hasNotifiedVisit) {
-    hasNotifiedVisit = true;
-    sendTelegramVisitorNotification().then(r => {
-      if (r.ok) {
-        console.log('Visitor notification sent to Telegram');
-      } else {
-        console.log('Failed to send visitor notification:', r.error);
-      }
-    });
-  }
-  
   setTimeout(()=> {
     document.getElementById('loadingScreen').classList.add('hidden');
     document.getElementById('app').removeAttribute('aria-hidden');
