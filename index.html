@@ -740,9 +740,25 @@ body.dashboard-open{overflow:hidden;height:100dvh;position:fixed;width:100%;top:
 #dashAdmin .admin-page-card{padding:15px 13px 18px}
 .admin-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}.admin-page-head h3{margin-bottom:4px!important}.admin-subtitle{margin:0;color:#8f98a8;font-size:11px;line-height:1.5}.admin-page-head .dash-btn{min-height:38px;padding:9px 10px;font-size:10px;flex:0 0 auto}
 .admin-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}.admin-tab{border:1px solid rgba(255,255,255,.08);background:#0a0d12;color:#9ea8b8;border-radius:13px;min-height:48px;padding:8px 7px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}.admin-tab [data-svg]{width:16px;height:16px}.admin-tab b{padding:3px 6px;border-radius:999px;background:rgba(255,255,255,.06);font-size:9px;color:#fff}.admin-tab.active{background:rgba(74,140,255,.12);border-color:rgba(74,140,255,.35);color:#fff}.admin-tab.active b{background:#4a8cff}
-.admin-search-wrap{position:relative;margin-bottom:12px}.admin-search-wrap [data-svg]{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:#6f798a}.admin-search{width:100%;height:48px;border-radius:14px;border:1px solid rgba(255,255,255,.09);background:#090c11;color:#fff;padding:0 13px 0 40px;font:inherit;font-size:12px;outline:none}.admin-search:focus{border-color:rgba(74,140,255,.65);box-shadow:0 0 0 3px rgba(74,140,255,.08)}
+.admin-search-wrap{position:relative;margin-bottom:12px}.admin-search-wrap [data-svg]{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:#6f798a}.admin-download-btn{position:absolute;right:7px;top:7px;width:34px;height:34px;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:#11161e;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer}.admin-download-btn [data-svg]{position:static;width:16px;height:16px;color:inherit;transform:none}.admin-download-btn:active{transform:scale(.96)}.admin-search{padding-right:50px}.admin-search{width:100%;height:48px;border-radius:14px;border:1px solid rgba(255,255,255,.09);background:#090c11;color:#fff;padding:0 13px 0 40px;font:inherit;font-size:12px;outline:none}.admin-search:focus{border-color:rgba(74,140,255,.65);box-shadow:0 0 0 3px rgba(74,140,255,.08)}
 .admin-user-list{display:flex;flex-direction:column;gap:9px}.admin-user-card-v3{background:linear-gradient(180deg,#11151b,#0a0d12);border:1px solid rgba(255,255,255,.075);border-radius:15px;padding:13px}.admin-user-main{display:flex;align-items:center;justify-content:space-between;gap:10px}.admin-user-email{min-width:0}.admin-user-email strong{display:block;color:#fff;font-size:12px;word-break:break-all;line-height:1.4}.admin-user-email small{display:block;color:#727d8f;font-size:9px;margin-top:4px;word-break:break-word}.admin-status-pill{flex:0 0 auto;padding:5px 8px;border-radius:999px;font-size:8px;font-weight:900}.admin-status-pill.active{color:#71df94;background:rgba(52,199,89,.1);border:1px solid rgba(52,199,89,.16)}.admin-status-pill.banned{color:#ff8178;background:rgba(255,69,58,.1);border:1px solid rgba(255,69,58,.16)}.admin-reason-v3{margin-top:9px;padding:9px 10px;border-radius:11px;background:rgba(255,255,255,.035);color:#aab3c2;font-size:10px;line-height:1.5}.admin-user-select{margin-top:10px;width:100%;height:43px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#151a22;color:#fff;font-size:11px;font-weight:800}.admin-empty{padding:22px 12px;text-align:center;color:#737e90;font-size:11px;border:1px dashed rgba(255,255,255,.08);border-radius:14px}
 @media(max-width:430px){#dashAdmin .admin-page-card{padding:14px 11px 18px}.admin-page-head h3{font-size:16px}.admin-tabs{gap:6px}.admin-tab{font-size:9px;min-height:46px}.admin-user-card-v3{padding:12px}}
+.admin-admin-highlight{display:flex;align-items:center;gap:12px;padding:13px 14px;margin:0 0 12px;border-radius:15px;background:linear-gradient(135deg,rgba(74,140,255,.14),rgba(74,140,255,.045));border:1px solid rgba(74,140,255,.28);box-shadow:0 10px 25px rgba(0,0,0,.18)}
+.admin-admin-icon{width:42px;height:42px;flex:0 0 42px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(74,140,255,.14);color:#79a7ff;border:1px solid rgba(74,140,255,.18)}
+.admin-admin-icon [data-svg]{width:21px;height:21px}
+.admin-admin-highlight small{display:block;color:#79a7ff;font-size:8px;font-weight:900;letter-spacing:.12em;margin-bottom:3px}
+.admin-admin-highlight strong{display:block;color:#fff;font-size:13px;word-break:break-all}
+.admin-admin-highlight span{display:block;color:#8d96a8;font-size:9px;margin-top:3px}
+.admin-bulk-card{background:linear-gradient(180deg,#11151b,#0a0d12);border:1px solid rgba(255,255,255,.075);border-radius:15px;padding:14px}
+.admin-bulk-title{display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:850;margin-bottom:6px}
+.admin-bulk-title [data-svg]{width:19px;height:19px;color:var(--accent)}
+.admin-bulk-desc{color:#8d96a8;font-size:10px;line-height:1.55;margin-bottom:12px}
+.admin-bulk-textarea{width:100%;min-height:180px;resize:vertical;padding:12px 13px;border-radius:13px;border:1px solid rgba(255,255,255,.10);background:#090c11;color:#fff;font:inherit;font-size:12px;line-height:1.6;outline:none}
+.admin-bulk-textarea:focus{border-color:rgba(74,140,255,.65);box-shadow:0 0 0 3px rgba(74,140,255,.09)}
+.admin-bulk-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.admin-bulk-actions .dash-btn{width:100%!important;min-height:48px}
+.admin-bulk-result{margin-top:11px;padding:10px 11px;border-radius:12px;background:rgba(255,255,255,.035);color:#aab3c2;font-size:10px;line-height:1.55}
+
 .admin-confirm-user{display:flex;align-items:center;gap:10px;padding:11px;border-radius:13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);margin-bottom:12px}.admin-confirm-user>[data-svg]{width:20px;height:20px;color:#78a8ff;flex:0 0 20px}.admin-confirm-user b{display:block;color:#fff;font-size:12px;word-break:break-all}.admin-confirm-user small{display:block;color:#7e899a;font-size:9px;margin-top:3px}
 </style>
 
@@ -1477,7 +1493,7 @@ body.dashboard-open{overflow:hidden;height:100dvh;position:fixed;width:100%;top:
 
     <!-- ADMIN -->
     <div id="dashAdmin" class="dash-page">
-      <div class="dash-card admin-page-card"><div class="admin-page-head"><div><div class="mini-title"><span data-svg="settings"></span> Administrator</div><h3>Panel Admin</h3><p class="admin-subtitle">Kelola Gmail user berdasarkan status aktif atau banned.</p></div><button class="dash-btn ghost" id="btnAdminBack"><span data-svg="arrow-left"></span>Kembali</button></div><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="active"><span data-svg="check"></span> Gmail Active <b id="adminActiveCount">0</b></button><button class="admin-tab" data-admin-tab="banned"><span data-svg="warning"></span> Gmail Banned <b id="adminBannedCount">0</b></button></div><div class="admin-search-wrap"><span data-svg="search"></span><input id="adminSearchInput" class="admin-search" type="search" placeholder="Cari alamat Gmail user..."></div><div id="adminUserList" class="admin-user-list"><div class="notice">Memuat data user...</div></div></div>
+      <div class="dash-card admin-page-card"><div class="admin-page-head"><div><div class="mini-title"><span data-svg="settings"></span> Administrator</div><h3>Panel Admin</h3><p class="admin-subtitle">Kelola Gmail user berdasarkan status aktif atau banned.</p></div><button class="dash-btn ghost" id="btnAdminBack"><span data-svg="arrow-left"></span>Kembali</button></div><div class="admin-admin-highlight"><div class="admin-admin-icon"><span data-svg="shield"></span></div><div><small>GMAIL ADMIN</small><strong>uhn8236@gmail.com</strong><span>Admin utama • Tidak dapat dibanned</span></div></div><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="active"><span data-svg="check"></span> Gmail Active <b id="adminActiveCount">0</b></button><button class="admin-tab" data-admin-tab="banned"><span data-svg="warning"></span> Gmail Banned <b id="adminBannedCount">0</b></button><button class="admin-tab" data-admin-tab="bulk-ban"><span data-svg="ban"></span> Banned Masal</button><button class="admin-tab" data-admin-tab="bulk-unban"><span data-svg="unlock"></span> Unbanned Masal</button></div><div class="admin-search-wrap" id="adminSearchWrap"><span data-svg="search"></span><input id="adminSearchInput" class="admin-search" type="search" placeholder="Cari alamat Gmail user..."><button id="btnDownloadBannedGmails" class="admin-download-btn" type="button" title="Download semua Gmail Banned" aria-label="Download semua Gmail Banned" style="display:none"><span data-svg="download"></span></button></div><div id="adminUserList" class="admin-user-list"><div class="notice">Memuat data user...</div></div></div>
     </div>
   </div>
   <nav class="bottom-nav"><button class="nav-btn" data-dash="history"><span data-svg="clock"></span><span class="nav-label">Riwayat</span></button><button class="nav-btn active" data-dash="home"><span data-svg="home"></span><span class="nav-label">Home</span></button><button class="nav-btn" data-dash="profile"><span data-svg="user-circle"></span><span class="nav-label">Profil</span></button></nav>
@@ -2073,6 +2089,7 @@ function showModal({ type='info', title='', desc='', body='', actions=[] }){
 // ========================= ADMIN PANEL V3 =========================
 let adminTab='active';
 let adminUsersCache=[];
+
 async function openAdminPanel(){
   const {data:{user}} = await supabaseClient.auth.getUser();
   if(!isAdminUser(user)){showToast('error','Akses ditolak','Panel ini hanya untuk admin.');return;}
@@ -2082,14 +2099,12 @@ async function openAdminPanel(){
   document.querySelectorAll('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));
   await loadAdminUsers();
 }
+
 async function loadAdminUsers(){
   const box=document.getElementById('adminUserList'); if(!box)return;
   box.innerHTML='<div class="notice">Memuat data user...</div>';
-  // Ambil daftar user melalui RPC admin agar user baru di Auth/Profiles
-  // tetap terbaca walaupun RLS tabel profiles membatasi SELECT biasa.
   const {data,error}=await supabaseClient.rpc('admin_list_users');
   if(error){
-    // Fallback ke tabel profiles untuk instalasi lama yang belum menjalankan SQL RPC.
     const fallback=await supabaseClient.from('profiles')
       .select('id,email,display_name,status,blocked_reason,created_at')
       .order('created_at',{ascending:false});
@@ -2101,14 +2116,46 @@ async function loadAdminUsers(){
   }else{
     adminUsersCache=data||[];
   }
+  // Selalu tampilkan Gmail admin di posisi paling atas.
+  adminUsersCache.sort((a,b)=>{
+    const aa=isAdminUser(a)?0:1, bb=isAdminUser(b)?0:1;
+    return aa-bb;
+  });
   renderAdminUsers(document.getElementById('adminSearchInput')?.value||'');
 }
+
 function renderAdminUsers(query=''){
   const box=document.getElementById('adminUserList'); if(!box)return;
   const active=adminUsersCache.filter(u=>u.status!=='blocked' || isAdminUser(u)).length;
   const banned=adminUsersCache.filter(u=>u.status==='blocked' && !isAdminUser(u)).length;
   document.getElementById('adminActiveCount').textContent=active;
   document.getElementById('adminBannedCount').textContent=banned;
+  const downloadBtn=document.getElementById('btnDownloadBannedGmails'); if(downloadBtn) downloadBtn.style.display=adminTab==='banned'?'inline-flex':'none';
+
+  const searchWrap=document.getElementById('adminSearchWrap');
+  if(adminTab==='bulk-ban' || adminTab==='bulk-unban'){
+    if(searchWrap) searchWrap.style.display='none';
+    const isBan=adminTab==='bulk-ban';
+    box.innerHTML=`<div class="admin-bulk-card">
+      <div class="admin-bulk-title"><span data-svg="${isBan?'ban':'unlock'}"></span>${isBan?'Banned Masal':'Unbanned Masal'}</div>
+      <div class="admin-bulk-desc">${isBan?'Masukkan Gmail user yang ingin dibanned. Bisa 1 atau banyak Gmail sekaligus. Pisahkan dengan baris baru atau koma.':'Masukkan Gmail user yang ingin di-unbanned. Bisa 1 atau banyak Gmail sekaligus. Pisahkan dengan baris baru atau koma.'}</div>
+      <textarea id="adminBulkEmails" class="admin-bulk-textarea" spellcheck="false" placeholder="contoh1@gmail.com&#10;contoh2@gmail.com&#10;contoh3@gmail.com"></textarea>
+      <div class="admin-bulk-actions">
+        <button type="button" class="dash-btn ghost" id="adminBulkClear"><span data-svg="trash"></span> Bersihkan</button>
+        <button type="button" class="dash-btn ${isBan?'danger':'primary'}" id="adminBulkExecute"><span data-svg="${isBan?'ban':'unlock'}"></span>${isBan?'Banned Sekarang':'Unbanned Sekarang'}</button>
+      </div>
+      <div id="adminBulkResult" class="admin-bulk-result">Minimal 1 Gmail. Gmail admin <b>uhn8236@gmail.com</b> tetap dilindungi.</div>
+    </div>`;
+    document.getElementById('adminBulkClear')?.addEventListener('click',()=>{
+      const t=document.getElementById('adminBulkEmails'); if(t)t.value='';
+      const r=document.getElementById('adminBulkResult'); if(r)r.innerHTML='Minimal 1 Gmail. Gmail admin <b>uhn8236@gmail.com</b> tetap dilindungi.';
+    });
+    document.getElementById('adminBulkExecute')?.addEventListener('click',()=>executeBulkAdminAction(isBan));
+    injectIcons();
+    return;
+  }
+  if(searchWrap) searchWrap.style.display='block';
+
   const q=(query||'').trim().toLowerCase();
   const list=adminUsersCache.filter(u=>{
     const blocked=u.status==='blocked';
@@ -2120,7 +2167,7 @@ function renderAdminUsers(query=''){
   box.innerHTML=list.map(u=>{
     const blocked=u.status==='blocked';
     return `<div class="admin-user-card-v3" data-admin-user="${escapeHtml(u.id)}">
-      <div class="admin-user-main"><div class="admin-user-email"><strong>${escapeHtml(u.email||'-')}</strong><small>${escapeHtml(u.display_name||'Tanpa nama')}</small></div><span class="admin-status-pill ${blocked?'banned':'active'}">${blocked?'BANNED':'ACTIVE'}</span></div>
+      <div class="admin-user-main"><div class="admin-user-email"><strong>${escapeHtml(u.email||'-')}</strong><small>${escapeHtml(userDisplayName(u))}</small></div><span class="admin-status-pill ${blocked?'banned':'active'}">${blocked?'BANNED':'ACTIVE'}</span></div>
       ${blocked&&u.blocked_reason?`<div class="admin-reason-v3"><b>Alasan:</b> ${escapeHtml(u.blocked_reason)}</div>`:''}
       ${isAdminUser(u)?`<div class="admin-user-select admin-protected"><span data-svg="shield"></span><span>Admin — Tidak Dapat Dibanned</span></div>`:`<button class="admin-user-select" type="button" data-admin-action="${blocked?'unban':'ban'}" data-id="${escapeHtml(u.id)}">${blocked?'Buka Gmail & Unban':'Pilih Gmail untuk Banned'}</button>`}
     </div>`;
@@ -2131,15 +2178,101 @@ function renderAdminUsers(query=''){
     if(btn.dataset.adminAction==='ban') openBanConfirm(u); else openUnbanConfirm(u);
   }));
 }
+
+function userDisplayName(user){ return user?.display_name || 'Tanpa nama'; }
+
+async function executeBulkAdminAction(isBan){
+  const textarea=document.getElementById('adminBulkEmails');
+  const result=document.getElementById('adminBulkResult');
+  const raw=textarea?.value||'';
+  const emails=[...new Set(raw.split(/[\s,;]+/).map(x=>x.trim().toLowerCase()).filter(Boolean))];
+  if(!emails.length){
+    showToast('warning','Gmail belum diisi','Masukkan minimal 1 Gmail user.');
+    return;
+  }
+  const invalid=emails.filter(e=>!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+  if(invalid.length){
+    showToast('warning','Format Gmail salah',`${invalid.length} Gmail tidak valid.`);
+    return;
+  }
+  const protectedAdmin=emails.filter(e=>e=== 'uhn8236@gmail.com');
+  if(protectedAdmin.length){
+    showToast('error','Gmail Admin dilindungi','Gmail admin tidak dapat di-banned atau diubah dari menu masal.');
+    return;
+  }
+  const matched=emails.map(email=>adminUsersCache.find(u=>(u.email||'').toLowerCase()===email)).filter(Boolean);
+  const missing=emails.filter(email=>!adminUsersCache.some(u=>(u.email||'').toLowerCase()===email));
+  const targets=matched.filter(u=>isBan ? u.status!=='blocked' : u.status==='blocked');
+  const already=matched.filter(u=>isBan ? u.status==='blocked' : u.status!=='blocked');
+
+  if(!targets.length){
+    const msg=isBan?'Semua Gmail yang dimasukkan sudah BANNED atau tidak ditemukan.':'Semua Gmail yang dimasukkan sudah ACTIVE atau tidak ditemukan.';
+    if(result) result.innerHTML=escapeHtml(msg)+(missing.length?`<br>Gmail tidak ditemukan: ${missing.length}`:'');
+    showToast('info','Tidak ada perubahan',msg);
+    return;
+  }
+
+  const button=document.getElementById('adminBulkExecute');
+  if(button){button.disabled=true;button.dataset.originalText=button.innerHTML;button.innerHTML='<span data-svg="loader"></span> Memproses...';injectIcons();}
+  let success=0, failed=[];
+  for(const user of targets){
+    const rpc=isBan?'admin_ban_user':'admin_unban_user';
+    const args=isBan?{target_id:user.id,reason:'Banned Masal oleh Admin'}:{target_id:user.id};
+    const {error}=await supabaseClient.rpc(rpc,args);
+    if(error){failed.push(`${user.email}: ${error.message}`);continue;}
+    success++;
+    adminUsersCache=adminUsersCache.map(x=>x.id===user.id
+      ? (isBan?{...x,status:'blocked',blocked_reason:'Banned Masal oleh Admin'}:{...x,status:'active',blocked_reason:null})
+      : x);
+  }
+  if(button){button.disabled=false;button.innerHTML=button.dataset.originalText||'';injectIcons();}
+  const action=isBan?'Banned':'Unbanned';
+  const details=[
+    `${success} Gmail berhasil ${action}.`,
+    already.length?`${already.length} Gmail sudah berstatus sesuai.`:'',
+    missing.length?`${missing.length} Gmail tidak ditemukan.`:'',
+    failed.length?`${failed.length} Gmail gagal diproses.`:''
+  ].filter(Boolean).join(' ');
+  if(result) result.innerHTML=escapeHtml(details)+(failed.length?`<br><br>${failed.map(escapeHtml).join('<br>')}`:'');
+  if(success){
+    showToast('success',`${action} Masal Berhasil`,`${success} Gmail berhasil diproses.`);
+    await loadAdminUsers();
+    adminTab=isBan?'banned':'active';
+    document.querySelectorAll('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));
+    renderAdminUsers('');
+  }else{
+    showToast('error','Tidak ada yang berhasil',details);
+  }
+}
+
 function openBanConfirm(user){
   if(isAdminUser(user)){showToast('info','Akun Admin','Akun admin tidak dapat dibanned.');return;}
-  const body=`<div class="modal-form"><div class="admin-confirm-user"><span data-svg="mail"></span><div><b>${escapeHtml(user.email||'-')}</b><small>${escapeHtml(user.display_name||'Tanpa nama')}</small></div></div><label>Alasan Banned</label><textarea id="adminBanReason" class="modal-input" style="height:100px;padding:12px;resize:none" placeholder="Contoh: Spam / melanggar rules...">Spam</textarea></div>`;
+  const body=`<div class="modal-form"><div class="admin-confirm-user"><span data-svg="mail"></span><div><b>${escapeHtml(user.email||'-')}</b><small>${escapeHtml(userDisplayName(user))}</small></div></div><label>Alasan Banned</label><textarea id="adminBanReason" class="modal-input" style="height:100px;padding:12px;resize:none" placeholder="Contoh: Spam / melanggar rules...">Spam</textarea></div>`;
   showModal({type:'warning',title:'Banned Gmail?',desc:'Gmail ini akan dipindahkan ke menu Gmail Banned dan akses user akan diblokir.',body,actions:[{label:'Batal',onClick:closeModal},{label:'Banned Sekarang',danger:true,onClick:async()=>{const reason=(document.getElementById('adminBanReason')?.value||'').trim();if(!reason)return showToast('warning','Alasan wajib','Masukkan alasan banned.');const {error}=await supabaseClient.rpc('admin_ban_user',{target_id:user.id,reason});if(error){showToast('error','Gagal Banned',error.message);return;}adminUsersCache=adminUsersCache.map(x=>x.id===user.id?{...x,status:'blocked',blocked_reason:reason}:x);closeModal();adminTab='banned';document.querySelectorAll('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));renderAdminUsers(document.getElementById('adminSearchInput')?.value||'');showModal({type:'success',title:'Gmail Berhasil Banned',desc:'Gmail user sudah masuk ke daftar Gmail Banned.',actions:[{label:'Oke',primary:true,onClick:closeModal}]});}}]});
   injectIcons();
 }
 function openUnbanConfirm(user){
   showModal({type:'info',title:'Unban Gmail?',desc:`Buka blokir untuk ${user.email||'-'}? User akan kembali ke daftar Gmail Active.`,body:`<div class="admin-confirm-user"><span data-svg="unlock"></span><div><b>${escapeHtml(user.email||'-')}</b><small>Alasan sebelumnya: ${escapeHtml(user.blocked_reason||'Tidak ada')}</small></div></div>`,actions:[{label:'Batal',onClick:closeModal},{label:'Unban Sekarang',primary:true,onClick:async()=>{const {error}=await supabaseClient.rpc('admin_unban_user',{target_id:user.id});if(error){showToast('error','Gagal Unban',error.message);return;}adminUsersCache=adminUsersCache.map(x=>x.id===user.id?{...x,status:'active',blocked_reason:null}:x);closeModal();adminTab='active';document.querySelectorAll('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));renderAdminUsers(document.getElementById('adminSearchInput')?.value||'');showModal({type:'success',title:'Gmail Berhasil Di-Unban',desc:'User sekarang kembali ke daftar Gmail Active.',actions:[{label:'Oke',primary:true,onClick:closeModal}]});}}]});
   injectIcons();
+}
+function downloadBannedGmails(){
+  const bannedUsers=adminUsersCache.filter(u=>u.status==='blocked' && !isAdminUser(u));
+  const emails=[...new Set(bannedUsers.map(u=>(u.email||'').trim().toLowerCase()).filter(Boolean))];
+  if(!emails.length){
+    showToast('info','Tidak ada Gmail Banned','Belum ada Gmail yang terbanned.');
+    return;
+  }
+  const content=emails.join('\n')+'\n';
+  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='gmail-banned.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  showToast('success','Download Berhasil',emails.length+' Gmail Banned berhasil didownload.');
 }
 function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 
@@ -2194,8 +2327,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
   document.getElementById('dashAdminBtn').addEventListener('click',openAdminPanel);
   document.getElementById('btnAdminBack').addEventListener('click',()=>switchDash('profile'));
-  document.querySelectorAll('.admin-tab').forEach(btn=>btn.addEventListener('click',()=>{adminTab=btn.dataset.adminTab;document.querySelectorAll('.admin-tab').forEach(x=>x.classList.toggle('active',x===btn));renderAdminUsers(document.getElementById('adminSearchInput')?.value||'');}));
+  document.querySelectorAll('.admin-tab').forEach(btn=>btn.addEventListener('click',()=>{
+    adminTab=btn.dataset.adminTab;
+    document.querySelectorAll('.admin-tab').forEach(x=>x.classList.toggle('active',x===btn));
+    const search=document.getElementById('adminSearchInput');
+    if(search && (adminTab==='bulk-ban'||adminTab==='bulk-unban')) search.value='';
+    renderAdminUsers(search?.value||'');
+  }));
   document.getElementById('adminSearchInput').addEventListener('input',e=>renderAdminUsers(e.target.value));
+  document.getElementById('btnDownloadBannedGmails')?.addEventListener('click',downloadBannedGmails);
 
   // WhatsApp Channel Button
   document.getElementById('btnJoinWhatsApp').addEventListener('click', () => {
