@@ -708,6 +708,7 @@ body.dashboard-open{overflow:hidden;height:100dvh;position:fixed;width:100%;top:
 #modalRoot.notification-fullscreen .modal-actions .btn-modal:first-child{min-width:62px!important}
 #modalRoot.notification-fullscreen .modal-actions .btn-modal:last-child{min-width:62px!important}
 .admin-announcement-card{margin-top:12px}.admin-announcement-textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.09);background:#090c11;color:#fff;font:inherit;font-size:12px;line-height:1.55;outline:none}.admin-announcement-textarea:focus{border-color:rgba(74,140,255,.65);box-shadow:0 0 0 3px rgba(74,140,255,.08)}.admin-announcement-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px}.admin-announcement-note{margin-top:8px;color:#737e90;font-size:9px;line-height:1.5}
+.live-broadcast-banner{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:min(92vw,430px);z-index:100000;display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(74,140,255,.28);border-radius:14px;background:rgba(14,18,25,.97);box-shadow:0 12px 30px rgba(0,0,0,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);animation:liveBroadcastIn .22s ease}.live-broadcast-banner .lb-icon{width:30px;height:30px;flex:0 0 30px;border-radius:9px;background:rgba(74,140,255,.12);color:#79a7ff;display:flex;align-items:center;justify-content:center}.live-broadcast-banner .lb-content{min-width:0;flex:1}.live-broadcast-banner strong{display:block;color:#fff;font-size:11px;line-height:1.3}.live-broadcast-banner .lb-message{margin-top:2px;color:#cbd2df;font-size:10px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.live-broadcast-banner button{border:0;background:rgba(255,255,255,.07);color:#fff;border-radius:9px;padding:7px 9px;font-size:9px;font-weight:800;cursor:pointer}.live-broadcast-banner .lb-close{background:transparent;color:#8f98a8;padding:5px;font-size:15px}.live-broadcast-banner.lb-hide{animation:liveBroadcastOut .18s ease forwards}@keyframes liveBroadcastIn{from{opacity:0;transform:translate(-50%,-12px)}to{opacity:1;transform:translate(-50%,0)}}@keyframes liveBroadcastOut{to{opacity:0;transform:translate(-50%,-12px)}}
 .dash-brand{display:flex;align-items:center;gap:10px;min-width:0}.dash-brand img{width:42px;height:42px;border-radius:13px;object-fit:cover;border:1px solid rgba(255,255,255,.09);flex:0 0 42px}.dash-brand h2{margin:0;font-size:17px;line-height:1.1;font-weight:800;color:#fff}.dash-brand small{display:block;margin-top:3px;color:#8d96a8;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
 .dash-btn{width:auto!important;border:0;border-radius:12px;padding:11px 13px;min-height:42px;font-weight:750;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:12px;line-height:1;transition:transform .18s,opacity .18s,background .18s}.dash-btn:active{transform:scale(.97)}.dash-btn.primary{background:#4a8cff;color:#fff;box-shadow:0 8px 20px rgba(74,140,255,.18)}.dash-btn.danger{background:rgba(255,69,58,.10);color:#ff8178;border:1px solid rgba(255,69,58,.15)}.dash-btn.ghost{background:rgba(255,255,255,.055);color:#e8ecf3;border:1px solid rgba(255,255,255,.075)}
 .dash-page{display:none!important;visibility:hidden}.dash-page.active{display:block!important;visibility:visible;animation:dashIn .24s ease}
@@ -1843,7 +1844,9 @@ async function checkIpAccess(){
     ipAccessChecked=true;
     if(data?.allowed===false){
       showBlocked(data.reason||'Akses website diblokir karena IP ini telah dibanned oleh admin. Silakan hubungi admin untuk mengajukan unbanned.');
-      try{await supabaseClient.auth.signOut();}catch(e){}
+      // Pertahankan session saat banned. Setelah admin melakukan unban,
+      // pemeriksaan live berikutnya akan otomatis membuka kembali website
+      // tanpa meminta user login/sign in ulang.
       return false;
     }
     // IP sudah diizinkan (termasuk setelah unban): jangan tampilkan overlay lama.
@@ -2197,7 +2200,7 @@ async function loadAnnouncements(options={}){
     fresh.forEach(x=>liveAnnouncementIds.add(String(x.id)));
     if(fresh.length){
       const latest=fresh.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
-      showModal({type:'info',title:'Broadcast Informasi',desc:'Informasi baru dari admin.',body:`<div class="announcement-item"><strong>Admin</strong><div class="announcement-message">${escapeHtml(latest.message)}</div><small>${escapeHtml(formatAnnouncementDate(latest.created_at))}</small></div>`,actions:[{label:'Lihat Semua',primary:true,onClick:openNotifications}]});
+      showLiveBroadcastBanner(latest);
     }
   }else{
     incoming.forEach(x=>liveAnnouncementIds.add(String(x.id)));
@@ -2205,6 +2208,19 @@ async function loadAnnouncements(options={}){
   liveAnnouncementInitialized=true;
 }
 
+let liveBroadcastBannerTimer=null;
+function showLiveBroadcastBanner(item){
+  document.querySelector('.live-broadcast-banner')?.remove();
+  const el=document.createElement('div');
+  el.className='live-broadcast-banner';
+  el.innerHTML=`<div class="lb-icon"><span data-svg="bell"></span></div><div class="lb-content"><strong>Broadcast Informasi</strong><div class="lb-message">${escapeHtml(item?.message||'Informasi baru dari admin.')}</div></div><button type="button" class="lb-view">Lihat</button><button type="button" class="lb-close" aria-label="Tutup">×</button>`;
+  document.body.appendChild(el);
+  injectIcons();
+  el.querySelector('.lb-view')?.addEventListener('click',()=>{el.remove();openNotifications();});
+  el.querySelector('.lb-close')?.addEventListener('click',()=>el.remove());
+  clearTimeout(liveBroadcastBannerTimer);
+  liveBroadcastBannerTimer=setTimeout(()=>{el.classList.add('lb-hide');setTimeout(()=>el.remove(),180);},8000);
+}
 function getHiddenAnnouncementIds(){
   try{return JSON.parse(localStorage.getItem('sg_deleted_announcement_ids')||'[]');}catch{return [];}
 }
@@ -2350,7 +2366,7 @@ function startLiveUpdates(){
     if(document.hidden || liveBanHandling)return;
     const {data:{user}}=await supabaseClient.auth.getUser();
     if(user) await checkIpAccess();
-  },2500);
+  },750);
 
   liveAnnouncementPollTimer=setInterval(async()=>{
     if(document.hidden)return;
@@ -2358,7 +2374,7 @@ function startLiveUpdates(){
     if(user && localStorage.getItem('sg_ever_logged_in_'+user.id)==='1'){
       await loadAnnouncements({live:true});
     }
-  },2500);
+  },1000);
 }
 
 function switchDash(page){const target=document.getElementById('dash'+page.charAt(0).toUpperCase()+page.slice(1));if(!target)return;document.querySelectorAll('.dash-page').forEach(x=>x.classList.remove('active'));target.classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.dash===page));if(page==='history'&&supabaseClient)supabaseClient.auth.getUser().then(({data})=>loadHistory(data.user));if(page==='home'){document.getElementById('dashboardScreen').scrollTop=0;}else{document.getElementById('dashboardScreen').scrollTop=0;}}
