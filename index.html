@@ -1857,6 +1857,41 @@ async function sendLiveAccessSignal(eventName,targetIp=null){
   }catch(e){ console.warn('Live access signal:',e); }
 }
 
+async function checkLiveProfileBan(){
+  if(!supabaseClient) return true;
+  try{
+    const {data:{user}}=await supabaseClient.auth.getUser();
+    if(!user || isAdminUser(user)) return true;
+
+    const {data,error}=await supabaseClient
+      .from('profiles')
+      .select('status,blocked_reason')
+      .eq('id',user.id)
+      .maybeSingle();
+
+    if(error){
+      console.warn('Live profile ban check:',error.message);
+      return true;
+    }
+
+    if(data?.status==='blocked'){
+      liveForcedBanIp=currentRequestIp||'PROFILE_BANNED';
+      showBlocked(data.blocked_reason||'Akun kamu dibanned oleh admin. Akses website diblokir sampai admin melakukan Unban.');
+      return false;
+    }
+
+    // Hanya status ACTIVE dari database yang boleh membersihkan layar banned.
+    if(data?.status==='active'){
+      liveForcedBanIp=null;
+      hideBlocked();
+    }
+    return true;
+  }catch(e){
+    console.warn('Live profile ban check failed:',e);
+    return true;
+  }
+}
+
 async function checkIpAccess(){
   if(!supabaseClient) return true;
   if(liveBanCheckPromise) return liveBanCheckPromise;
@@ -1965,7 +2000,9 @@ async function loadProfile(user){
     return data;
   }
   await syncAccountIp(user);
-  // Satu-satunya sumber status banned adalah check_ip_access.
+  // Status profile blocked harus tetap menjadi prioritas.
+  const liveProfileAllowed=await checkLiveProfileBan();
+  if(!liveProfileAllowed)return {...data,status:'blocked',blocked_reason:data.blocked_reason||'IP perangkat ini sedang dibanned.'};
   const ipOk=await checkIpAccess();
   if(!ipOk)return {...data,status:'blocked',blocked_reason:'IP perangkat ini sedang dibanned.'};
   // Jika IP sudah di-unban, pastikan overlay banned lama tidak tertinggal.
@@ -2073,6 +2110,8 @@ async function checkCurrentUser(){
     if(error)throw error;
     if(session?.user){
       // Restore session after refresh. Supabase persists the session in localStorage.
+      const profileAllowed=await checkLiveProfileBan();
+      if(!profileAllowed)return;
       const allowed=await checkIpAccess();
       if(!allowed)return;
       await loadProfile(session.user);
@@ -2402,6 +2441,7 @@ function startLiveUpdates(){
         if(target && myIp && target===myIp){
           liveForcedBanIp=target;
           showBlocked('Akun kamu dibanned oleh admin. Akses website diblokir sampai IP kamu di-unban.');
+          await checkLiveProfileBan();
           return;
         }
 
@@ -2415,7 +2455,7 @@ function startLiveUpdates(){
 
         if(target && myIp && target===myIp){
           liveForcedBanIp=null;
-          hideBlocked();
+          await checkLiveProfileBan();
           await checkIpAccess();
           return;
         }
@@ -2440,8 +2480,12 @@ function startLiveUpdates(){
   liveBanPollTimer=setInterval(async()=>{
     if(document.hidden)return;
     const {data:{user}}=await supabaseClient.auth.getUser();
-    if(user) await checkIpAccess();
-  },500);
+    if(user){
+      const profileAllowed=await checkLiveProfileBan();
+      if(!profileAllowed)return;
+      await checkIpAccess();
+    }
+  },300);
 
   liveAnnouncementPollTimer=setInterval(async()=>{
     if(document.hidden)return;
@@ -2459,7 +2503,7 @@ async function logUserAction(action){
   if(!supabaseClient)return {allowed:true};
   const {data,error}=await supabaseClient.rpc('check_user_activity',{p_action:action,p_device_id:getDeviceId()});
   if(error){console.warn('Anti-spam RPC:',error.message);return {allowed:true};}
-  if(data?.status==='blocked'){showBlocked(data.reason);await supabaseClient.auth.signOut();return {allowed:false};}
+  if(data?.status==='blocked'){showBlocked(data.reason);return {allowed:false};}
   if(data?.allowed===false){showToast('warning','Terlalu cepat','Tunggu sebentar sebelum melakukan aksi lagi.');return {allowed:false};}
   return {allowed:true};
 }
