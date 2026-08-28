@@ -1838,6 +1838,8 @@ async function checkIpAccess(){
       try{await supabaseClient.auth.signOut();}catch(e){}
       return false;
     }
+    // IP sudah diizinkan (termasuk setelah unban): jangan tampilkan overlay lama.
+    hideBlocked();
     return true;
   }catch(err){
     console.warn('IP access check failed:',err);
@@ -1865,7 +1867,9 @@ async function getPublicIp(){
 async function syncAccountIp(user){
   if(!supabaseClient||!user||isAdminUser(user)) return {allowed:true};
   try{
-    // Simpan IP publik user ke profiles agar Panel Admin selalu memiliki IP target.
+    // Simpan IP publik user untuk kebutuhan Panel Admin.
+    // Tidak melakukan claim_account_ip saat login agar akun yang sama
+    // tetap dapat login kembali dari IP/perangkat yang sama.
     const publicIp=await getPublicIp();
     if(publicIp){
       currentRequestIp=publicIp;
@@ -1874,26 +1878,12 @@ async function syncAccountIp(user){
         .eq('id',user.id);
       if(updateError) console.warn('Gagal menyimpan IP user:',updateError.message);
     }
-
-    // Tetap jalankan RPC lama untuk kompatibilitas dengan sistem keamanan Supabase.
-    const {data,error}=await supabaseClient.rpc('claim_account_ip',{p_user_id:user.id});
-    if(error){
-      console.warn('IP account binding:',error.message);
-      return {allowed:true};
-    }
-    currentRequestIp=data?.ip||currentRequestIp;
-    if(data?.allowed===false){
-      showBlocked(data?.reason||'Perangkat/IP ini sudah terhubung ke akun lain atau telah dibanned. Silakan hubungi admin untuk unbanned.');
-      try{await supabaseClient.auth.signOut();}catch(e){}
-      return {allowed:false};
-    }
     return {allowed:true};
   }catch(err){
-    console.warn('IP account binding failed:',err);
+    console.warn('IP sync failed:',err);
     return {allowed:true};
   }
 }
-
 async function loadProfile(user){
   if(!supabaseClient||!user)return null;
   let {data,error}=await supabaseClient.from('profiles').select('*').eq('id',user.id).maybeSingle();
@@ -1913,14 +1903,16 @@ async function loadProfile(user){
     if(created.error){console.error(created.error);return null;}
     data=created.data||payload;
   }
-  if(data?.status==='blocked'){showBlocked(data.blocked_reason);try{await supabaseClient.auth.signOut();}catch(e){}return data;}
-  // Jangan memakai claim_account_ip saat login. RPC tersebut dapat menolak akun
-  // hanya karena IP sedang terikat ke akun lain, padahal IP tersebut belum dibanned.
-  // Simpan IP publik user ke profil agar Panel Admin dapat menemukan target banned.
+  if(data?.status==='blocked'){
+    showBlocked(data.blocked_reason);
+    try{await supabaseClient.auth.signOut();}catch(e){}
+    return data;
+  }
   await syncAccountIp(user);
-  // Banned harus ditentukan hanya oleh check_ip_access / tabel banned_ips.
+  // Satu-satunya sumber status banned adalah check_ip_access.
   const ipOk=await checkIpAccess();
   if(!ipOk)return {...data,status:'blocked',blocked_reason:'IP perangkat ini sedang dibanned.'};
+  // Jika IP sudah di-unban, pastikan overlay banned lama tidak tertinggal.
   hideBlocked();
   userPanel.classList.add('active');
   document.getElementById('userEmail').textContent=data?.display_name||user.email||'User';
@@ -1984,6 +1976,8 @@ async function handleAuthSubmit(e){
       result=await supabaseClient.auth.signInWithPassword({email,password});
       if(result.error)throw result.error;
 
+      // Tandai bahwa akun ini sudah pernah melakukan LOGIN (bukan sekadar daftar).
+      localStorage.setItem('sg_ever_logged_in_'+result.data.user.id,'1');
       const profile=await loadProfile(result.data.user);
       if(profile?.status==='blocked'){
         await supabaseClient.auth.signOut();
@@ -2018,32 +2012,36 @@ async function handleAuthSubmit(e){
 async function logoutUser(){if(supabaseClient)await supabaseClient.auth.signOut();LS.del('sg_last_user');hideBlocked();hideDashboard();closeAuth();showToast('info','Logout','Kamu telah keluar dari akun.');}
 async function checkCurrentUser(){
   if(!supabaseClient)return;
-  if(!(await checkIpAccess()))return;
   try{
-    // Session Supabase disimpan secara aman di storage browser.
-    // Password TIDAK disimpan di localStorage.
-    const {data:{session}}=await supabaseClient.auth.getSession();
+    const {data:{session},error}=await supabaseClient.auth.getSession();
+    if(error)throw error;
     if(session?.user){
+      // Restore session after refresh. Supabase persists the session in localStorage.
+      const allowed=await checkIpAccess();
+      if(!allowed)return;
       await loadProfile(session.user);
     }else{
       LS.del('sg_last_user');
+      hideBlocked();
+      hideDashboard();
     }
   }catch(err){
     console.error('Session restore:',err);
-    showToast('error','Gagal memulihkan sesi','Silakan login kembali.');
   }
-  supabaseClient.auth.onAuthStateChange((_event,session)=>{
-    setTimeout(async()=>{
-      if(session?.user){
-        await loadProfile(session.user);
-      }else{
-        LS.del('sg_last_user');
-        hideDashboard();
-      }
-    },0);
+  // Listen only for real auth changes. Do not force logout/dashboard changes
+  // during token refresh or the initial session event.
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+    if(event==='SIGNED_OUT'){
+      LS.del('sg_last_user');
+      hideBlocked();
+      hideDashboard();
+      return;
+    }
+    if(event==='SIGNED_IN' && session?.user){
+      setTimeout(()=>loadProfile(session.user),0);
+    }
   });
 }
-
 function getLocalHistory(userId){
   return LS.get('sg_store_history_'+userId, []);
 }
@@ -2164,6 +2162,14 @@ let announcementsCache=[];
 let announcementsLoaded=false;
 async function loadAnnouncements(){
   if(!supabaseClient)return;
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  // User yang baru mendaftar belum boleh melihat broadcast.
+  if(!user || localStorage.getItem('sg_ever_logged_in_'+user.id)!=='1') {
+    announcementsCache=[];
+    announcementsLoaded=true;
+    updateNotificationBadge();
+    return;
+  }
   const {data,error}=await supabaseClient.from('announcements').select('id,message,created_at').order('created_at',{ascending:false}).limit(20);
   if(error){
     console.warn('Announcements:',error.message);
